@@ -11,10 +11,19 @@
                 position: absolute;
                 z-index: 100;
             }
+            #dudette {
+                border-radius: 5px;
+                background-color: lightgreen;
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                z-index: 100;
+            }
         </style>
     </head>
     <body>
         <div id="dude"></div>
+        <div id="dudette"></div>
         <script type="text/javascript">
             $(function() {
                 var CONST_SIZE = 20;
@@ -22,6 +31,54 @@
                 var COLS = 50;
                 
                 var grid = [];
+            
+                function placePerson($person, personData) {
+                    $person.css("left", (CONST_SIZE + CONST_SIZE * personData.x) + "px");
+                    $person.css("top", (CONST_SIZE + CONST_SIZE * personData.y) + "px");
+                    $person.css("background-color", personData.color);
+                }
+                
+                function movePerson(keyCode, $person, person) {
+                    switch(keyCode) {
+                        case "left":
+                            person.x--;
+                            break;
+                        case "up":
+                            person.y--;
+                            break;
+                        case "down":
+                            person.y++;
+                            break;
+                        case "right":
+                            person.x++;
+                            break;
+                        default:
+                            return;
+                    };
+                    
+                    placePerson($person, person);
+                        
+                    var $div = grid[person.y * COLS + person.x];
+                    var data = $div.data("game");
+                    
+                    if(data.color === "red") {
+                        for(var x = 0; x < COLS; x++) {
+                            for(var y = 0; y < ROWS; y++) {
+                                $div = grid[y * COLS + x];
+                                data = $div.data("game");
+                                if(data.color === "white") { data.color = "black"; }
+                                else if(data.color === "black") { data.color = "white"; }
+                                
+                                $div.css("background-color", data.color);
+                            }
+                        }
+                        
+                        dude.color = (dude.color === "cyan") ? "navy" : "cyan";
+                        dudette.color = (dudette.color === "lightgreen") ? "green" : "lightgreen";
+                        placePerson($dude, dude);
+                        placePerson($dudette, dudette);
+                    }
+                }
             
                 function clickHandler() {
                     $this = $(this);
@@ -43,6 +100,7 @@
             
                 var $body = $("body");
                 var $dude = $("#dude");
+                var $dudette = $("#dudette");
         
                 for(var x = 0; x < COLS; x++) {
                     for(var y = 0; y < ROWS; y++) {
@@ -64,53 +122,19 @@
                 }
                 
                 var dude = { x: 0, y: 0, color: "cyan" };
-                $dude
-                    .css("left", CONST_SIZE + "px")
-                    .css("top", CONST_SIZE + "px")
-                    .data("dude", dude)
-                    ;
+                var dudette = { x: COLS - 1, y: ROWS - 1 };
+                placePerson($dude, dude);
+                placePerson($dudette, dudette);
                 
                 $body.keydown(function(e) {
-                    switch(e.keyCode) {
-                        case 37: // left
-                            dude.x--;
-                            break;
-                        case 38: // up
-                            dude.y--;
-                            break;
-                        case 40: // down
-                            dude.y++;
-                            break;
-                        case 39: // right
-                            dude.x++;
-                            break;
-                        default:
-                            return;
-                    };
+                    var P1 = { 37: "left", 38: "up", 40: "down", 39: "right" };
+                    var P2 = { 87: "up", 65: "left", 83: "down", 68: "right" };
                     
-                    $dude
-                        .css("left", (CONST_SIZE + dude.x * CONST_SIZE) + "px")
-                        .css("top", (CONST_SIZE + dude.y * CONST_SIZE) + "px")
-                        ;
-                        
-                    var $div = grid[dude.y * COLS + dude.x];
-                    var data = $div.data("game");
+                    var dir = P1[e.keyCode];
+                    if(dir !== undefined) { movePerson(dir, $dude, dude); }
                     
-                    if(data.color === "red") {
-                        for(var x = 0; x < COLS; x++) {
-                            for(var y = 0; y < ROWS; y++) {
-                                $div = grid[y * COLS + x];
-                                data = $div.data("game");
-                                if(data.color === "white") { data.color = "black"; }
-                                else if(data.color === "black") { data.color = "white"; }
-                                
-                                $div.css("background-color", data.color);
-                            }
-                        }
-                        
-                        dude.color = (dude.color === "cyan") ? "navy" : "cyan";
-                        $dude.css("background-color", dude.color);
-                    }
+                    dir = P2[e.keyCode];
+                    if(dir !== undefined) { movePerson(dir, $dudette, dudette); }
                 });
             });
         </script>
