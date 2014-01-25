@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+        <style>
+            #dude {
+                border-radius: 5px;
+                background-color: white;
+                border-style:solid;
+                border-width:3;
+                border-color:teal;
+                width: 14px;
+                height: 14px;
+                position: absolute;
+                z-index: 100;
+            }
+          
+
+        </style>
+    </head>
+    <body>
+        <div id="dude"></div>
+        
+     
+
+        <script type="text/javascript">
+            $(function() {
+                var CONST_SIZE = 20;
+                var ROWS = 10;
+                var COLS = 40;
+                
+                var grid = [];
+            
+
+                //rotate the color of the grid square
+                function clickHandler() {
+                    $this = $(this);
+                    data = $this.data("game");
+
+                    if(data.color === "black") {
+                        data.color = "white";
+                    }
+                    else if(data.color === "white") {
+                        data.color = "red";
+                    }
+                    else if(data.color === "red") {
+                        data.color = "pink";
+                    }
+                    else if(data.color === "pink") {
+                        data.color = "green";
+                    }
+                    else if(data.color === "green") {
+                        data.color = "yellow";
+                    }
+                    else if(data.color === "yellow") {
+                        data.color = "blue";
+                    }
+                    else if(data.color === "blue") {
+                        data.color = "darkViolet";
+                    }
+                    else {
+                        data.color = "black";
+                    }
+                    
+                    
+                    $this.css("background-color", data.color);
+                }
+            
+                var $body = $("body");
+                var $dude = $("#dude");
+            
+           
+        
+                //layout the game board
+                for(var x = 0; x < COLS; x++) {
+                    for(var y = 0; y < ROWS; y++) {
+                        var $div = grid[y * COLS + x] = $(document.createElement("DIV"));
+                        $div
+                            .css("background-color", "black")
+                            .css("border", "1px dotted #eee")
+                            .css("width", CONST_SIZE + "px")
+                            .css("height", CONST_SIZE + "px")
+                            .css("position", "absolute")
+                            .css("left", (CONST_SIZE + x * CONST_SIZE) + "px")
+                            .css("top", (CONST_SIZE + y * CONST_SIZE) + "px")
+                            .data("game", { color: "black" })
+                            .click(clickHandler)
+                            ;
+                            
+                        $body.append($div);
+                    }
+                }
+                
+                var dude = { x: 0, y: 0, color: "white" };
+                $dude
+                    .css("left", CONST_SIZE + "px")
+                    .css("top", CONST_SIZE + "px")
+                    .data("dude", dude)
+                    ;
+
+                
+                
+                
+                //input handler
+                $body.keydown(function(e) {
+
+                    switch(e.keyCode) {
+                        case 37: // left
+                            var $div = grid[(dude.y) * COLS + (dude.x-1)];
+                            var check = $div.data("game");
+                            if ((check.color == dude.color) || (check.color == "yellow") || (check.color == "darkViolet") || (check.color == "pink"))
+                             dude.x--;
+                            break;
+                        case 38: // up
+                            var $div = grid[(dude.y-1) * COLS + (dude.x)];
+                            var check = $div.data("game");
+                            if ((check.color == dude.color) || (check.color == "yellow") || (check.color == "darkViolet") || (check.color == "pink"))
+                                dude.y--;
+                            break;
+                        case 40: // down
+                            var $div = grid[(dude.y+1) * COLS + (dude.x)];
+                            var check = $div.data("game");
+                            if ((check.color == dude.color) || (check.color == "yellow") || (check.color == "darkViolet") || (check.color == "pink"))
+                                dude.y++;
+                            break;
+                        case 39: // right
+                            var $div = grid[(dude.y) * COLS + (dude.x+1)];
+                            var check = $div.data("game");
+                            if ((check.color == dude.color) || (check.color == "yellow") || (check.color == "darkViolet") || (check.color == "pink"))
+                                dude.x++;
+                            break;
+                        default:
+                            return;
+                    };
+                    
+                    $dude
+                        .css("left", (CONST_SIZE + dude.x * CONST_SIZE) + "px")
+                        .css("top", (CONST_SIZE + dude.y * CONST_SIZE) + "px")
+                        ;
+                  
+                      
+                        
+                    var $div = grid[dude.y * COLS + dude.x];
+                    var data = $div.data("game");
+                    
+
+
+                    //flip toggle for the player shift
+                    if(data.color === "yellow") {
+                        dude.color = "green";
+                    }
+                    if (data.color === "darkViolet") {
+                        dude.color = "blue";
+                    }
+                    if (data.color === "pink") {
+                        dude.color = "red";
+                    }
+                    $dude.css("background-color", dude.color);
+                    
+
+
+                    //flip toggle for the board colors
+                    if(data.color === "red") {
+                        for(var x = 0; x < COLS; x++) {
+                            for(var y = 0; y < ROWS; y++) {
+                                $div = grid[y * COLS + x];
+                                data = $div.data("game");
+                                if(data.color === "white") { data.color = "black"; }
+                                else if(data.color === "black") { data.color = "white"; }
+                                
+
+                                //$div.css("background-color", data.color);
+                            }
+                        }
+                        
+                        //dude.color = (dude.color === "cyan") ? "navy" : "cyan";
+                        $dude.css("background-color", dude.color);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
