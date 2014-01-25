@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+        <style>
+            #dude {
+                border-radius: 5px;
+                background-color: cyan;
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                z-index: 100;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="dude"></div>
+        <script type="text/javascript">
+            $(function() {
+                var CONST_SIZE = 20;
+                var ROWS = 10;
+                var COLS = 50;
+                
+                var grid = [];
+            
+                function clickHandler() {
+                    $this = $(this);
+                    data = $this.data("game");
+
+                    //data.color = (data.color === "black") ? "white" : "black";
+                    if(data.color === "black") {
+                        data.color = "white";
+                    }
+                    else if(data.color === "white") {
+                        data.color = "red";
+                    }
+                    else {
+                        data.color = "black";
+                    }
+                    
+                    $this.css("background-color", data.color);
+                }
+            
+                var $body = $("body");
+                var $dude = $("#dude");
+        
+                for(var x = 0; x < COLS; x++) {
+                    for(var y = 0; y < ROWS; y++) {
+                        var $div = grid[y * COLS + x] = $(document.createElement("DIV"));
+                        $div
+                            .css("background-color", "black")
+                            .css("border", "1px dotted #eee")
+                            .css("width", CONST_SIZE + "px")
+                            .css("height", CONST_SIZE + "px")
+                            .css("position", "absolute")
+                            .css("left", (CONST_SIZE + x * CONST_SIZE) + "px")
+                            .css("top", (CONST_SIZE + y * CONST_SIZE) + "px")
+                            .data("game", { color: "black" })
+                            .click(clickHandler)
+                            ;
+                            
+                        $body.append($div);
+                    }
+                }
+                
+                var dude = { x: 0, y: 0, color: "cyan" };
+                $dude
+                    .css("left", CONST_SIZE + "px")
+                    .css("top", CONST_SIZE + "px")
+                    .data("dude", dude)
+                    ;
+                
+                $body.keydown(function(e) {
+                    switch(e.keyCode) {
+                        case 37: // left
+                            dude.x--;
+                            break;
+                        case 38: // up
+                            dude.y--;
+                            break;
+                        case 40: // down
+                            dude.y++;
+                            break;
+                        case 39: // right
+                            dude.x++;
+                            break;
+                        default:
+                            return;
+                    };
+                    
+                    $dude
+                        .css("left", (CONST_SIZE + dude.x * CONST_SIZE) + "px")
+                        .css("top", (CONST_SIZE + dude.y * CONST_SIZE) + "px")
+                        ;
+                        
+                    var $div = grid[dude.y * COLS + dude.x];
+                    var data = $div.data("game");
+                    
+                    if(data.color === "red") {
+                        for(var x = 0; x < COLS; x++) {
+                            for(var y = 0; y < ROWS; y++) {
+                                $div = grid[y * COLS + x];
+                                data = $div.data("game");
+                                if(data.color === "white") { data.color = "black"; }
+                                else if(data.color === "black") { data.color = "white"; }
+                                
+                                $div.css("background-color", data.color);
+                            }
+                        }
+                        
+                        dude.color = (dude.color === "cyan") ? "navy" : "cyan";
+                        $dude.css("background-color", dude.color);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
