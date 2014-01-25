@@ -3,34 +3,45 @@
     <head>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
         <style>
+            body {
+                background-color: cornflowerblue;
+            }
             #dude {
                 border-radius: 5px;
-                background-color: cyan;
-                width: 20px;
-                height: 20px;
                 position: absolute;
                 z-index: 100;
+                border: 5px solid blue;
+                margin-left: -5px;
+                margin-top: -5px;
             }
             #dudette {
                 border-radius: 5px;
-                background-color: lightgreen;
-                width: 20px;
-                height: 20px;
                 position: absolute;
                 z-index: 100;
+                border: 5px solid red;
+                margin-left: -5px;
+                margin-top: -5px;
+            }
+            #ballz {
+                background-color: magenta;
+                position: absolute;
+                z-index: 200;
+                border-radius: 100px;
             }
         </style>
     </head>
     <body>
         <div id="dude"></div>
         <div id="dudette"></div>
+        <div id="ballz"></div>
         <script type="text/javascript">
             $(function() {
-                var CONST_SIZE = 20;
-                var ROWS = 10;
-                var COLS = 50;
-                
+                var CONST_SIZE = 30;
+                var ROWS = 16;
+                var COLS = 16;
+
                 var grid = [];
+                var can_pickup = true;
             
                 function placePerson($person, personData) {
                     $person.css("left", (CONST_SIZE + CONST_SIZE * personData.x) + "px");
@@ -38,7 +49,17 @@
                     $person.css("background-color", personData.color);
                 }
                 
+                function placeBallz($ballz, ballz) {
+                    $ballz
+                        .css("left", (CONST_SIZE + CONST_SIZE * ballz.x) + "px")
+                        .css("top", (CONST_SIZE + CONST_SIZE * ballz.y) + "px")
+                        ;
+                }
+                
                 function movePerson(keyCode, $person, person) {
+                    var oldx = person.x;
+                    var oldy = person.y;
+                
                     switch(keyCode) {
                         case "left":
                             person.x--;
@@ -56,11 +77,29 @@
                             return;
                     };
                     
-                    placePerson($person, person);
-                        
+                    if(person.x < 0 || person.x >= COLS || person.y < 0 || person.y >= ROWS) {
+                        person.x = oldx;
+                        person.y = oldy;
+                        return;
+                    }
+
                     var $div = grid[person.y * COLS + person.x];
                     var data = $div.data("game");
                     
+                    if(data.color !== "red" && data.color !== "gray" && data.color !== person.color) {
+                        person.x = oldx;
+                        person.y = oldy;
+                        return;
+                    }
+                    
+                    placePerson($person, person);
+                    
+                    if(ballz.owner === person) {
+                        ballz.x = person.x;
+                        ballz.y = person.y;
+                        placeBallz($ballz, ballz);
+                    }
+
                     if(data.color === "red") {
                         for(var x = 0; x < COLS; x++) {
                             for(var y = 0; y < ROWS; y++) {
@@ -68,13 +107,53 @@
                                 data = $div.data("game");
                                 if(data.color === "white") { data.color = "black"; }
                                 else if(data.color === "black") { data.color = "white"; }
-                                
+
                                 $div.css("background-color", data.color);
                             }
                         }
+
+                        //dude.color = (dude.color === "white") ? "black" : "white";
+                        //dudette.color = (dudette.color === "white") ? "black" : "white";
+                        placePerson($dude, dude);
+                        placePerson($dudette, dudette);
+                    }
+                    
+                    // Pick up the ball?
+                    if(
+                        ballz.x >= person.x - 1 && ballz.x <= person.x + 1 &&
+                        ballz.y >= person.y - 1 && ballz.y <= person.y + 1
+                    ) {
+                        if(can_pickup) {
+                            // Yup!
+                            can_pickup = false;
+                            ballz.owner = person;
+                            ballz.$owner = $person;
+                            ballz.x = person.x;
+                            ballz.y = person.y;
+                            
+                            placeBallz($ballz, ballz);
+                        }
+                    }
+                    else {
+                        // Not near the ball.
+                        can_pickup = true;
+                    }
+                    
+                    // Winning
+                    if(ballz.owner && ballz.x === ballz.owner.winx && ballz.y === ballz.owner.winy) {
+                        ballz.owner = ballz.$owner = null;
+                        ballz.x = COLS / 2;
+                        ballz.y = ROWS / 2;
                         
-                        dude.color = (dude.color === "cyan") ? "navy" : "cyan";
-                        dudette.color = (dudette.color === "lightgreen") ? "green" : "lightgreen";
+                        dude.x = dude.ox;
+                        dude.y = dude.oy;
+                        dude.color = grid[dude.y * COLS + dude.x].data("game").color;
+                        dudette.x = dudette.ox;
+                        dudette.y = dudette.oy;
+                        dudette.color = grid[dudette.y * COLS + dudette.x].data("game").color;
+                        
+                        can_pickup = true;
+                        placeBallz($ballz, ballz);
                         placePerson($dude, dude);
                         placePerson($dudette, dudette);
                     }
@@ -84,11 +163,13 @@
                     $this = $(this);
                     data = $this.data("game");
 
-                    //data.color = (data.color === "black") ? "white" : "black";
                     if(data.color === "black") {
                         data.color = "white";
                     }
                     else if(data.color === "white") {
+                        data.color = "gray";
+                    }
+                    else if(data.color === "gray") {
                         data.color = "red";
                     }
                     else {
@@ -96,24 +177,57 @@
                     }
                     
                     $this.css("background-color", data.color);
+                    
+                    // Symmetry
+                    var sy = (ROWS - 1) - data.y;
+                    var sx = (COLS - 1) - data.x;
+                    
+                    var $s = grid[sy * COLS + sx];
+                    var sData = $s.data("game");
+                    
+                    switch(data.color) {
+                        case "white":
+                            sData.color = "black";
+                            break;
+                        case "black":
+                            sData.color = "white";
+                            break;
+                        default:
+                            sData.color = data.color;
+                            break;
+                    }
+                    $s.css("background-color", sData.color);
                 }
             
                 var $body = $("body");
                 var $dude = $("#dude");
                 var $dudette = $("#dudette");
+                
+                var $ballz = $("#ballz");
+                var ballz = { x: COLS / 2, y: ROWS / 2, owner: null, $owner: null };
+                $ballz.data("ballz", ballz);
+                $ballz.css("width", CONST_SIZE + "px");
+                $ballz.css("height", CONST_SIZE + "px");
+                placeBallz($ballz, ballz);
+
+                $dude.css("width", CONST_SIZE + "px");
+                $dude.css("height", CONST_SIZE + "px");
+                $dudette.css("width", CONST_SIZE + "px");
+                $dudette.css("height", CONST_SIZE + "px");
         
                 for(var x = 0; x < COLS; x++) {
                     for(var y = 0; y < ROWS; y++) {
                         var $div = grid[y * COLS + x] = $(document.createElement("DIV"));
+                        var color = (x >= COLS / 2) ? "white" : "black";
                         $div
-                            .css("background-color", "black")
+                            .css("background-color", color)
                             .css("border", "1px dotted #eee")
                             .css("width", CONST_SIZE + "px")
                             .css("height", CONST_SIZE + "px")
                             .css("position", "absolute")
                             .css("left", (CONST_SIZE + x * CONST_SIZE) + "px")
                             .css("top", (CONST_SIZE + y * CONST_SIZE) + "px")
-                            .data("game", { color: "black" })
+                            .data("game", { color: color, x: x, y: y })
                             .click(clickHandler)
                             ;
                             
@@ -121,14 +235,24 @@
                     }
                 }
                 
-                var dude = { x: 0, y: 0, color: "cyan" };
-                var dudette = { x: COLS - 1, y: ROWS - 1 };
+                var dude = { x: 0, y: 0, color: "black" };
+                var dudette = { x: COLS - 1, y: ROWS - 1, color: "white" };
+                
+                dude.ox = dude.x; dude.oy = dude.y;
+                dudette.ox = dudette.x; dudette.oy = dudette.y;
+
+                dude.winx = dudette.ox; dude.winy = dudette.oy;
+                dudette.winx = dude.ox; dudette.winy = dude.oy;
+                
                 placePerson($dude, dude);
                 placePerson($dudette, dudette);
                 
                 $body.keydown(function(e) {
-                    var P1 = { 37: "left", 38: "up", 40: "down", 39: "right" };
-                    var P2 = { 87: "up", 65: "left", 83: "down", 68: "right" };
+                    console.debug(e.keyCode);
+                
+                    var P1 = { 87: "up", 65: "left", 83: "down", 68: "right" }; // wasd
+                    //var P2 = { 37: "left", 38: "up", 40: "down", 39: "right" }; // arrow keys
+                    var P2 = { 104: "up", 100: "left", 101: "down", 102: "right" }; // 8 456
                     
                     var dir = P1[e.keyCode];
                     if(dir !== undefined) { movePerson(dir, $dude, dude); }
