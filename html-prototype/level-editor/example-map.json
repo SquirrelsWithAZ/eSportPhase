@@ -1,0 +1,51 @@
+{
+    "tileCountI": 3,
+    "tileCountJ": 3,
+
+    "tileWidth": 3,
+    "tileHeight": 3,
+
+    "spawns": [
+        {
+            "name": "Black Player Spawn",
+            "type": "player_spawn",
+            "i": 0,
+            "j": 0,
+            "args": {
+                "players": [ "black" ]
+            }
+        },
+        {
+            "name": "White Player Spawn",
+            "type": "player_spawn",
+            "i": 2,
+            "j": 2,
+            "args": {
+                "players": [ "white" ]
+            }
+        },
+        {
+            "name": "Switch A",
+            "type": "switch",
+            "prefab": "Switch_Prefab",
+            "i": 1,
+            "j": 1,
+            "args": {
+                "cooldown_s": 0.0,
+                "start_enabled": true
+            }
+        }
+    ],
+
+    "layout": [
+        { "prefab": "Tile_Type_A", "type": "black" },
+        { "prefab": "Tile_Type_B", "type": "black" },
+        { "prefab": "Tile_Type_C", "type": "black" },
+        { "prefab": "Tile_Type_D", "type": "neutral" },
+        { "prefab": "Tile_Type_E", "type": "neutral" },
+        { "prefab": "Tile_Type_F", "type": "neutral" },
+        { "prefab": "Tile_Type_D", "type": "white" },
+        { "prefab": "Tile_Type_E", "type": "white" },
+        { "prefab": "Tile_Type_F", "type": "white" }
+    ]
+}

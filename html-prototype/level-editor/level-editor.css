@@ -1,0 +1,18 @@
+HTML, BODY, #layout-table {
+    min-height: 100%;
+    height: 100%;
+}
+
+#layout-table {
+    position: relative;
+    width: 100%;
+}
+
+#nav-row { height: 0; }
+#nav-row TD { padding: 10px; }
+#main-content TD { vertical-align: top; }
+.tab-content { position: relative; height: 100%;  }
+.tab-pane { position: relative; height: 100%; padding: 0 10px 10px 10px; }
+
+#json-editor { min-height: 100%; }
+
