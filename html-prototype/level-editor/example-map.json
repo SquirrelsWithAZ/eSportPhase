@@ -5,47 +5,67 @@
     "tileWidth": 3,
     "tileHeight": 3,
 
-    "spawns": [
+    "actors": [
         {
-            "name": "Black Player Spawn",
-            "type": "player_spawn",
-            "i": 0,
-            "j": 0,
-            "args": {
-                "players": [ "black" ]
-            }
+            "type": "Tile_A",
+            "prefab": "Tile_Type_A"
         },
         {
-            "name": "White Player Spawn",
-            "type": "player_spawn",
-            "i": 2,
-            "j": 2,
-            "args": {
-                "players": [ "white" ]
-            }
+            "type": "Tile_B",
+            "prefab": "Tile_Type_B"
         },
         {
-            "name": "Switch A",
-            "type": "switch",
-            "prefab": "Switch_Prefab",
-            "i": 1,
-            "j": 1,
-            "args": {
-                "cooldown_s": 0.0,
-                "start_enabled": true
-            }
+            "type": "Switch",
+            "prefab": "Switch"
+        },
+        {
+            "type": "Spawn",
+            "prefab": "Spawn"
         }
     ],
 
-    "layout": [
-        { "prefab": "Tile_Type_A", "type": "black" },
-        { "prefab": "Tile_Type_B", "type": "black" },
-        { "prefab": "Tile_Type_C", "type": "black" },
-        { "prefab": "Tile_Type_D", "type": "neutral" },
-        { "prefab": "Tile_Type_E", "type": "neutral" },
-        { "prefab": "Tile_Type_F", "type": "neutral" },
-        { "prefab": "Tile_Type_D", "type": "white" },
-        { "prefab": "Tile_Type_E", "type": "white" },
-        { "prefab": "Tile_Type_F", "type": "white" }
-    ]
+    "layout": {
+
+        "props": [
+            {
+                "name": "player-a-spawn",
+                "type": "Spawn",
+                "i": 0,
+                "j": 0,
+                "args": {
+                    "players": [ "a" ]
+                }
+            },
+            {
+                "name": "player-b-spawn",
+                "type": "Spawn",
+                "i": 2,
+                "j": 2,
+                "args": {
+                    "players": [ "b" ]
+                }
+            },
+            {
+                "name": "switch-a",
+                "type": "Switch",
+                "i": 1,
+                "j": 1,
+                "args": {
+                    "cooldown_ms": 0
+                }
+            }
+        ],
+
+        "Tiles": [
+            { "type": "Tile_A", "args": { "state": "TypeA" } },
+            { "type": "Tile_A", "args": { "state": "TypeA" } },
+            { "type": "Tile_A", "args": { "state": "TypeA" } },
+            { "type": "Tile_A", "args": { "state": "TypeA" } },
+            { "type": "Tile_A", "args": { "state": "Neutral" } },
+            { "type": "Tile_A", "args": { "state": "Neutral" } },
+            { "type": "Tile_A", "args": { "state": "TypeB" } },
+            { "type": "Tile_A", "args": { "state": "TypeB" } },
+            { "type": "Tile_A", "args": { "state": "TypeB" } }
+        ]
+    }
 }
