@@ -16,3 +16,25 @@ HTML, BODY, #layout-table {
 
 #json-editor { min-height: 100%; }
 
+#map { position: relative; }
+#grid-container { position: absolute; }
+
+#controls {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    height: 40px;
+
+    border-radius: 5px;
+    background-color: #555;
+    padding: 10px;
+
+    font-weight: bold;
+    color: white;
+}
+
+.grid-tile {
+    position: absolute;
+    border: 1px dotted #aaa; /* if you change border update level-editor.js renderMap() */
+    cursor: pointer;
+}

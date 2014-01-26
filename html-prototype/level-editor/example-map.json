@@ -7,6 +7,13 @@
 
     "actors": [
         {
+            "editor": {
+                "img": "https://some.where/an/image.png",
+                "left": 50,
+                "top": 50,
+                "width": 50,
+                "height": 50
+            },
             "type": "Tile_A",
             "prefab": "Tile_Type_A"
         },
@@ -56,7 +63,7 @@
             }
         ],
 
-        "Tiles": [
+        "tiles": [
             { "type": "Tile_A", "args": { "state": "TypeA" } },
             { "type": "Tile_A", "args": { "state": "TypeA" } },
             { "type": "Tile_A", "args": { "state": "TypeA" } },
